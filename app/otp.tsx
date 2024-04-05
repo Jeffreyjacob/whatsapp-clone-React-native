@@ -1,11 +1,12 @@
 import { View, Text, KeyboardAvoidingView, Linking, 
-    Platform, StyleSheet, TouchableOpacity, Keyboard, ActivityIndicator, TouchableWithoutFeedback } from 'react-native'
+    Platform, StyleSheet, TouchableOpacity, Keyboard, ActivityIndicator, TouchableWithoutFeedback, Alert } from 'react-native'
 import React, { useState } from 'react'
 import Colors from '@/constants/Colors';
 import { Entypo } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaskInput from 'react-native-mask-input';
 import {useRouter } from 'expo-router';
+import { isClerkAPIResponseError, useSignIn, useSignUp } from '@clerk/clerk-expo';
 
 
 const Otp = () => {
@@ -14,19 +15,48 @@ const Otp = () => {
     const KeyboardVerticalOffset = Platform.OS === 'ios' ? 90:0;
     const {bottom} = useSafeAreaInsets();
     const router = useRouter();
+    const {signUp,setActive} = useSignUp();
+    const {signIn} = useSignIn();
 
     const openLink = ()=>{
         Linking.openURL('https://www.google.com')
     }
     const sendOtp = async()=>{
        setLoading(true)
-       setTimeout(()=>{
-        setLoading(false);
+       try{
+        await signUp?.create({
+            phoneNumber
+        });
+        signUp!.preparePhoneNumberVerification();
         router.push(`/verify/${phoneNumber}`)
-       },2000);
+       }catch(err){
+        console.log(err);
+        if(isClerkAPIResponseError(err) ){
+            if(err.errors[0].code === 'form_identifier_exists'){
+                console.log('user exists');
+                await trySignIn();
+            }else{
+                setLoading(false)
+                Alert.alert('Error',err.errors[0].message);
+            }
+        }
+       }
     };
     const trySignIn = async()=>{
+         const {supportedFirstFactors} = await signIn!.create({
+              identifier:phoneNumber,
+         });
+         const firstPhoneFactor:any = supportedFirstFactors.find((factor:any)=>{
+            return factor.strategy === 'phone_code';
+         });
+         const { phoneNumerId } = firstPhoneFactor;
 
+         await signIn!.prepareFirstFactor({
+            strategy:'phone_code',
+            phoneNumberId:phoneNumerId,
+         });
+         router.push(`/verify/${phoneNumber}?signin=true`);
+         setLoading(false)
     };
     const NIG_phone = [
         '(',`+`, /\d/, /\d/, /\d/,')', ' ', /\d/, /\d/, /\d/, '-',/\d/, /\d/,/\d/, '-', /\d/, /\d/, /\d/, /\d/,

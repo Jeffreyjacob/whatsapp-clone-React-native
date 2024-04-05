@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native'
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { Stack, useLocalSearchParams, useNavigation } from 'expo-router';
 import {
@@ -8,6 +8,7 @@ import {
   useClearByFocusCell
 } from 'react-native-confirmation-code-field';
 import Colors from '@/constants/Colors';
+import { isClerkAPIResponseError, useSignIn, useSignUp } from '@clerk/clerk-expo';
 
 const CELL_COUNT = 6;
 const Page = () => {
@@ -18,6 +19,8 @@ const Page = () => {
       value:code,
       setValue:setCode,
     });
+    const {signUp,setActive} = useSignUp();
+    const {signIn} = useSignIn(); 
 
     useEffect(()=>{
       if(code.length === 6){
@@ -31,10 +34,32 @@ const Page = () => {
     },[code]);
 
     const verifyCode = async()=>{
-
+      try{
+       await signUp!.attemptPhoneNumberVerification({
+        code
+       });
+       await setActive!({session: signUp!.createdSessionId});
+      }catch(err){
+          console.log('error',JSON.stringify(err,null,2));
+          if(isClerkAPIResponseError(err)){
+            Alert.alert('Error',err.errors[0].message);
+          }
+      
+      }
     }
     const verifySignIn = async ()=>{
-
+      try{
+         await signIn!.attemptFirstFactor({
+          strategy:'phone_code',
+          code,
+         });
+         await setActive!({session:signIn!.createdSessionId});
+      }catch(err){
+           console.log('error',JSON.stringify(err,null,2));
+           if(isClerkAPIResponseError(err)){
+             Alert.alert('Error',err.errors[0].message);
+           }
+      }
     }
     const resendCode = async()=>{
 
