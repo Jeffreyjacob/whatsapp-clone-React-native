@@ -37,6 +37,7 @@ const Otp = () => {
                 await trySignIn();
             }else{
                 setLoading(false)
+                console.log(err.errors)
                 Alert.alert('Error',err.errors[0].message);
             }
         }
@@ -59,12 +60,12 @@ const Otp = () => {
          setLoading(false)
     };
     const NIG_phone = [
-        '(',`+`, /\d/, /\d/, /\d/,')', ' ', /\d/, /\d/, /\d/, '-',/\d/, /\d/,/\d/, '-', /\d/, /\d/, /\d/, /\d/,
+        `+`, /\d/, ' ', /\d/, /\d/, /\d/, ' ',/\d/, /\d/,/\d/, ' ', /\d/, /\d/, /\d/, /\d/
     ]
     
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-    <KeyboardAvoidingView style={{flex:1}}>
+    <KeyboardAvoidingView keyboardVerticalOffset={KeyboardVerticalOffset} style={{flex:1}}>
         <View style={styles.container}>
             {
             loading && (

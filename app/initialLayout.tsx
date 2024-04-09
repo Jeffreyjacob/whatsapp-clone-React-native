@@ -11,7 +11,7 @@ const InitialLayout = () => {
         if(!isLoaded) return;
       const inTabsGroup = segments[0] === '(tabs)';
       if(isSignedIn && !inTabsGroup){
-           router.replace('/(tabs)/chats');
+           router.replace('/(tabs)/Calls');
       }else if(!isSignedIn){
        router.replace('/')
       }
@@ -23,6 +23,7 @@ const InitialLayout = () => {
     <Stack.Screen name="otp" options={{ headerTitle:'Enter Your Phone Number',headerBackVisible:false}} />
     <Stack.Screen  name='verify/[phone]'
     options={{headerTitle:'Verify Your Phone Number',headerBackTitle:'Edit Number'}}/>
+    <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
   </Stack>
   )
 }
