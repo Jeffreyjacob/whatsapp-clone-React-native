@@ -11,7 +11,7 @@ const InitialLayout = () => {
         if(!isLoaded) return;
       const inTabsGroup = segments[0] === '(tabs)';
       if(isSignedIn && !inTabsGroup){
-           router.replace('/(tabs)/Calls');
+           router.replace('/(tabs)/Chats');
       }else if(!isSignedIn){
        router.replace('/')
       }

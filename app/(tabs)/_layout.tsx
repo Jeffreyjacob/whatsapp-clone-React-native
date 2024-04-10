@@ -47,9 +47,10 @@ export default function TabLayout() {
             )
           }} />
 
-        <Tabs.Screen name='chats'
+        <Tabs.Screen name='Chats'
           options={{
             title: 'Chats',
+            headerShown:false,
             tabBarIcon: ({ size, color }) => (
               <Ionicons name='chatbubbles' size={size} color={color} />
             )
