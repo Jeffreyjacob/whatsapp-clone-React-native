@@ -1,6 +1,6 @@
 import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
+import { Link, Tabs, useSegments } from 'expo-router';
 import { Pressable } from 'react-native';
 
 import Colors from '@/constants/Colors';
@@ -9,7 +9,7 @@ import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-ic
 
 
 export default function TabLayout() {
-
+   const segment = useSegments();
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Tabs screenOptions={{
@@ -53,7 +53,11 @@ export default function TabLayout() {
             headerShown:false,
             tabBarIcon: ({ size, color }) => (
               <Ionicons name='chatbubbles' size={size} color={color} />
-            )
+            ),
+            tabBarStyle:{
+              backgroundColor:Colors.background,
+              display:segment[2] === '[id]' ? 'none':'flex'
+            }
           }} />
 
         <Tabs.Screen name='Settings'
